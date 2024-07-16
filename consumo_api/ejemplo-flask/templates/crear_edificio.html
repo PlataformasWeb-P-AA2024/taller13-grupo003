@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Crear Edificio</title>
+  </head>
+  <body>
+    <h1>Crear Nuevo Edificio</h1>
+    <form method="POST">
+      <label for="nombre">Nombre del Edificio:</label>
+      <input type="text" id="nombre" name="nombre" required><br><br>
+
+      <label for="direccion">Direccion:</label>
+      <input type="text" id="direccion" name="direccion" required><br><br>
+
+      <label for="ciudad">Ciudad:</label>
+      <input type="text" id="ciudad" name="ciudad" required><br><br>
+
+      <label for="id_tipo">Tipo de Edificio:</label><br>
+        <select id="id_tipo" name="tipo">
+            <option value="recidencial">Residencial</option>
+            <option value="comercial">Comercial</option>
+        </select><br><br>
+
+      <button type="submit">Crear Edificio</button>
+    </form>
+  </body>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Crear Departamento</title>
+  </head>
+  <body>
+    <h1>Crear Nuevo Departamento</h1>
+    <form method="POST">
+      <label for="nombrePropietario">Nombre del Propietario:</label>
+      <input type="text" id="nombrePropietario" name="nombrePropietario" required><br><br>
+
+      <label for="costo">Costo:</label>
+      <input type="number" id="costo" name="costo" required><br><br>
+
+      <label for="numero_cuartos">Número de Cuartos:</label>
+      <input type="number" id="numero_cuartos" name="numero_cuartos" required><br><br>
+
+      <label for="edificio">Edificio:</label>
+      <select id="edificio" name="edificio" required>
+        {% for edificio in edificios %}
+          <option value="{{ edificio.url }}">{{ edificio.nombre }} - {{ edificio.direccion }}</option>
+        {% endfor %}
+      </select><br><br>
+
+      <button type="submit">Crear Departamento</button>
+    </form>
+  </body>
+</html>

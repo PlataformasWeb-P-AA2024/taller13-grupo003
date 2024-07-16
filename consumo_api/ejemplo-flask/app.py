@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request,redirect, url_for
 import requests
 import json
 from config import usuario, clave
@@ -7,7 +7,9 @@ app = Flask(__name__, template_folder='templates')
 
 @app.route("/")
 def hello_world():
-    return "<p>Hello, World!</p>"
+    r = requests.get("http://127.0.0.1:8000/api/departamentos/", auth=(usuario, clave))
+    departamentos = json.loads(r.content)['results']
+    return render_template("index.html", departamentos=departamentos)
 
 
 @app.route("/losedificios")
@@ -26,7 +28,7 @@ def los_edificios():
 def los_departamentos():
     """
     """
-    r = requests.get("http://127.0.0.1:5000/api/departamentos/",
+    r = requests.get("http://127.0.0.1:8000/api/departamentos/",
             auth=(usuario,clave))
     datos = json.loads(r.content)['results']
     numero = json.loads(r.content)['count']
@@ -59,44 +61,76 @@ def obtener_edificio(url):
     direccion_edificio = json.loads(r.content)['direccion']
     cadena = "%s %s" % (nombre_edificio, direccion_edificio)
     return cadena
+#----------------------------------------
 
-# Crear un edificio
-@app.route("/crear_edificio_formulario")
-def crear_edificio_formulario():
-    return render_template("crearedificios.html")
-
-@app.route("/crear_edificio", methods=['POST'])
+@app.route("/crear_edificio", methods=['GET', 'POST'])
 def crear_edificio():
-    nombre = request.form['nombre']
-    direccion = request.form['direccion']
-    payload = {'nombre': nombre, 'direccion': direccion}
-    r = requests.post("http://127.0.0.1:8000/api/edificios/", data=payload, auth=(usuario, clave))
-    return redirect('/losedificios')
+    if request.method == 'POST':
+        nombre = request.form['nombre']
+        direccion = request.form['direccion']
+        ciudad = request.form['ciudad']
+        tipo = request.form['tipo']
+        data = {'nombre': nombre, 'direccion': direccion, 'ciudad': ciudad,'tipo': tipo}
+        requests.post("http://127.0.0.1:8000/api/edificios/", data=data, auth=(usuario, clave))
+        return redirect(url_for('los_edificios'))
+    return render_template("crear_edificio.html")   
 
-# Editar un departamento
-@app.route("/editar_departamento/<int:id>", methods=['GET'])
-def editar_departamento_formulario(id):
-    r = requests.get(f"http://127.0.0.1:8000/api/departamentos/{id}/", auth=(usuario, clave))
-    datos = json.loads(r.content)
-    return render_template("editar_departamento.html", datos=datos)
-
-@app.route("/editar_departamento/<int:id>", methods=['POST'])
+@app.route("/crear_departamento", methods=['GET', 'POST'])
+def crear_departamento():
+    if request.method == 'POST':
+        nombrePropietario = request.form['nombrePropietario']
+        costo = request.form['costo']
+        numero_cuartos = request.form['numero_cuartos']
+        edificio = request.form['edificio']
+        data = {'nombrePropietario': nombrePropietario, 'costo': costo, 'numero_cuartos': numero_cuartos,'edificio': edificio}
+        requests.post("http://127.0.0.1:8000/api/departamentos/", data=data, auth=(usuario, clave))
+        return redirect(url_for('los_departamentos_dos'))
+        # Obtener la lista de edificios disponibles
+    r = requests.get("http://127.0.0.1:8000/api/edificios/", auth=(usuario, clave))
+    edificios = json.loads(r.content)['results']
+    return render_template("crear_departamento.html",edificios=edificios)
+#-----------------------------------------------
+@app.route("/editar_departamento/<int:id>", methods=['GET', 'POST'])
 def editar_departamento(id):
-    nombrePropietario = request.form['nombrePropietario']
-    costo = request.form['costo']
-    numero_cuartos = request.form['numero_cuartos']
-    edificio = request.form['edificio']  # Ajusta según tu formulario
-    payload = {
-        'nombrePropietario': nombrePropietario,
-        'costo': costo,
-        'numero_cuartos': numero_cuartos,
-        'edificio': edificio
-    }
-    r = requests.put(f"http://127.0.0.1:8000/api/departamentos/{id}/", data=payload, auth=(usuario, clave))
-    return redirect('/losdepartamentosdos')
+    r = requests.get(f"http://127.0.0.1:8000/api/departamentos/{id}/", auth=(usuario, clave))
+    departamento = json.loads(r.content)
 
-# Eliminar un departamento
-@app.route("/eliminar_departamento/<int:id>", methods=['GET'])
+    if request.method == 'POST':
+        nombrePropietario = request.form['nombrePropietario']
+        costo = request.form['costo']
+        numero_cuartos = request.form['numero_cuartos']
+        edificio = request.form['edificio']
+
+        data = {'nombrePropietario': nombrePropietario, 'costo': costo, 'numero_cuartos': numero_cuartos,'edificio': edificio}
+
+        requests.put(f"http://127.0.0.1:8000/api/departamentos/{id}/", data=data, auth=(usuario, clave))
+        return redirect(url_for('los_departamentos_dos'))
+    r = requests.get("http://127.0.0.1:8000/api/edificios/", auth=(usuario, clave))
+    edificios = json.loads(r.content)['results']
+    return render_template("editar_departamento.html", departamento=departamento, edificios=edificios)
+
+@app.route("/editar_edificio/<int:id>", methods=['GET', 'POST'])
+def editar_edificio(id):
+    r = requests.get(f"http://127.0.0.1:8000/api/edificios/{id}/", auth=(usuario, clave))
+    edificio = json.loads(r.content)
+
+    if request.method == 'POST':
+        nombre= request.form['nombre']
+        direccion = request.form['direccion']
+        ciudad = request.form['ciudad']
+        tipo = request.form['tipo']
+
+        data = {'nombre': nombre, 'direccion': direccion, 'ciudad': ciudad,'tipo': tipo}
+
+        requests.put(f"http://127.0.0.1:8000/api/edificios/{id}/", data=data, auth=(usuario, clave))
+    return render_template("editar_edificio.html", edificio=edificio)
+#---------------------------------------------------
+@app.route("/eliminar_departamento/<int:id>", methods=['POST'])
 def eliminar_departamento(id):
-    r = requests.delete(f"http://127.0.0.1:8000/api/departamentos/{id}/", auth=(usuario, clave))
-    return redirect('/losdepartamentosdos')
+    requests.delete(f"http://127.0.0.1:8000/api/departamentos/{id}/", auth=(usuario, clave))
+    return redirect(url_for('los_departamentos_dos'))
+
+@app.route("/eliminar_edificio/<int:id>", methods=['POST'])
+def eliminar_edificio(id):
+    requests.delete(f"http://127.0.0.1:8000/api/edificios/{id}/", auth=(usuario, clave))
+    return redirect(url_for('los_edificios'))
