@@ -59,3 +59,44 @@ def obtener_edificio(url):
     direccion_edificio = json.loads(r.content)['direccion']
     cadena = "%s %s" % (nombre_edificio, direccion_edificio)
     return cadena
+
+# Crear un edificio
+@app.route("/crear_edificio_formulario")
+def crear_edificio_formulario():
+    return render_template("crearedificios.html")
+
+@app.route("/crear_edificio", methods=['POST'])
+def crear_edificio():
+    nombre = request.form['nombre']
+    direccion = request.form['direccion']
+    payload = {'nombre': nombre, 'direccion': direccion}
+    r = requests.post("http://127.0.0.1:8000/api/edificios/", data=payload, auth=(usuario, clave))
+    return redirect('/losedificios')
+
+# Editar un departamento
+@app.route("/editar_departamento/<int:id>", methods=['GET'])
+def editar_departamento_formulario(id):
+    r = requests.get(f"http://127.0.0.1:8000/api/departamentos/{id}/", auth=(usuario, clave))
+    datos = json.loads(r.content)
+    return render_template("editar_departamento.html", datos=datos)
+
+@app.route("/editar_departamento/<int:id>", methods=['POST'])
+def editar_departamento(id):
+    nombrePropietario = request.form['nombrePropietario']
+    costo = request.form['costo']
+    numero_cuartos = request.form['numero_cuartos']
+    edificio = request.form['edificio']  # Ajusta según tu formulario
+    payload = {
+        'nombrePropietario': nombrePropietario,
+        'costo': costo,
+        'numero_cuartos': numero_cuartos,
+        'edificio': edificio
+    }
+    r = requests.put(f"http://127.0.0.1:8000/api/departamentos/{id}/", data=payload, auth=(usuario, clave))
+    return redirect('/losdepartamentosdos')
+
+# Eliminar un departamento
+@app.route("/eliminar_departamento/<int:id>", methods=['GET'])
+def eliminar_departamento(id):
+    r = requests.delete(f"http://127.0.0.1:8000/api/departamentos/{id}/", auth=(usuario, clave))
+    return redirect('/losdepartamentosdos')

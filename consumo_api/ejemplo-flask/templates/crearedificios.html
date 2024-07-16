@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>crear edificios - 1</title>
+  </head>
+  <body>
+    <h5>Listado de departamentos - {{numero}}</h5>
+
+    {% for e in datos %}
+
+    <ol>
+      <li><b>NOmbre del propietario: </b>{{e['nombrePropietario']}}</li>
+      <li><b>Costo: </b>{{e['costo']}}</li>
+      <li><b>NUmero de cuartos: </b>{{e['numero_cuartos']}}</li>
+      <li><b>Edificio: </b>{{e['edificio']}}</li>
+    </ol>
+    <hr>
+    {% endfor%}
+  </body>
+</html>

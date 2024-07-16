@@ -77,5 +77,5 @@ Nota: Un departamento pertenece a un edificio
 
 - Crear una aplicación en Flask que permita:
 	-	Listar Edificios haciendo uso de los servicios web creados en el proyecto de Django
-	- Listar Departamentos haciendo uso de los servicios web creados en el proyecto de Django.
+	- Listar Departamentos haciendo uso de los servicios web creados en el proyecto	 de Django.
 	- Crear Edificios haciendo uso de los servicios web creados en el proyecto de Django.
