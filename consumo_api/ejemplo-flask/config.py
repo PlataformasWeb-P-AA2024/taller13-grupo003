@@ -2,5 +2,5 @@
     Agregar variables globales
 """
 
-usuario = "r"
-clave = "reroes"
+usuario = "grupobj"
+clave = "12345"
